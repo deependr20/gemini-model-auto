@@ -53,7 +53,7 @@ export default function BrokerIntegrations() {
             Supported Brokers & Exchanges
           </h2>
           <p className="text-gray-400 text-lg max-w-3xl mx-auto">
-            Connect to 25+ brokers and exchanges worldwide. Trade stocks, options, futures, forex, and crypto 
+            Connect to 25+ brokers and exchanges worldwide. Trade stocks, options, futures, forex, and crypto
             all from one unified platform.
           </p>
         </div>
@@ -71,7 +71,7 @@ export default function BrokerIntegrations() {
         {/* Broker Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-12">
           {brokers.map((broker, index) => (
-            <div 
+            <div
               key={index}
               className="group bg-slate-900/50 backdrop-blur-sm border border-slate-700 rounded-xl p-4 text-center hover:border-purple-500/50 transition-all duration-300 transform hover:scale-105 cursor-pointer"
             >
@@ -94,7 +94,7 @@ export default function BrokerIntegrations() {
             <h3 className="text-xl font-semibold text-white mb-2">Easy Setup</h3>
             <p className="text-gray-400">Connect your broker account in minutes with our simple API key integration.</p>
           </div>
-          
+
           <div className="text-center">
             <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <ExternalLink className="w-8 h-8 text-white" />
@@ -102,7 +102,7 @@ export default function BrokerIntegrations() {
             <h3 className="text-xl font-semibold text-white mb-2">Secure Connection</h3>
             <p className="text-gray-400">Bank-level security with encrypted API connections and secure data handling.</p>
           </div>
-          
+
           <div className="text-center">
             <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-white text-2xl">⚡</span>
@@ -116,10 +116,10 @@ export default function BrokerIntegrations() {
         <div className="text-center">
           <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-2xl p-8 max-w-2xl mx-auto">
             <h3 className="text-2xl font-bold text-white mb-4">
-              Don't See Your Broker?
+              Don&apos;t See Your Broker?
             </h3>
             <p className="text-gray-300 mb-6">
-              We're constantly adding new broker integrations. Contact us to request support for your preferred broker.
+              We&apos;re constantly adding new broker integrations. Contact us to request support for your preferred broker.
             </p>
             <button className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-lg transition-all duration-200 transform hover:scale-105">
               Request Integration

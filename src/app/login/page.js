@@ -42,7 +42,7 @@ export default function Login() {
         // Store user data in localStorage or context
         localStorage.setItem('user', JSON.stringify(data.user))
         localStorage.setItem('token', data.token)
-        
+
         // Redirect to dashboard
         router.push('/dashboard')
       } else {
@@ -169,7 +169,7 @@ export default function Login() {
           {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <p className="text-gray-400">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/register" className="text-purple-400 hover:text-purple-300 font-medium">
                 Sign up for free
               </Link>

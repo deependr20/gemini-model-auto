@@ -282,12 +282,21 @@ export class ZerodhaAPI {
   }
 }
 
-// Helper function to get Zerodha login URL
+// Helper functions for Zerodha authentication
 export function getZerodhaLoginURL(apiKey, redirectURL) {
-  return `https://kite.trade/connect/login?api_key=${apiKey}&redirect_url=${encodeURIComponent(redirectURL)}`
+  const baseURL = 'https://kite.zerodha.com/connect/login'
+  const params = new URLSearchParams({
+    api_key: apiKey,
+    v: '3'
+  })
+
+  if (redirectURL) {
+    params.append('redirect_params', `redirect_url=${encodeURIComponent(redirectURL)}`)
+  }
+
+  return `${baseURL}?${params.toString()}`
 }
 
-// Helper function to generate access token from request token
 export async function generateZerodhaAccessToken(apiKey, apiSecret, requestToken) {
   try {
     const checksum = crypto.createHash('sha256')
@@ -298,17 +307,31 @@ export async function generateZerodhaAccessToken(apiKey, apiSecret, requestToken
       api_key: apiKey,
       request_token: requestToken,
       checksum: checksum
+    }, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     })
 
-    return {
-      success: true,
-      accessToken: response.data.data.access_token,
-      data: response.data
+    if (response.data && response.data.data && response.data.data.access_token) {
+      return {
+        success: true,
+        accessToken: response.data.data.access_token,
+        data: response.data.data
+      }
+    } else {
+      return {
+        success: false,
+        error: 'Invalid response from Zerodha'
+      }
     }
   } catch (error) {
+    console.error('Zerodha token generation error:', error)
     return {
       success: false,
       error: error.response?.data?.message || error.message
     }
   }
 }
+
+

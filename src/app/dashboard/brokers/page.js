@@ -33,7 +33,7 @@ export default function BrokersPage() {
       displayName: 'Zerodha Kite',
       logo: '🟢',
       setupUrl: 'https://kite.trade/apps/',
-      description: 'India\'s largest discount broker'
+      description: 'India&apos;s largest discount broker'
     },
     {
       name: 'UPSTOX',
@@ -363,7 +363,7 @@ export default function BrokersPage() {
                           Zerodha OAuth Authentication
                         </p>
                         <p className="text-blue-200 text-sm">
-                          After entering your API key and secret, you'll be redirected to Zerodha to authorize the connection.
+                          After entering your API key and secret, you&apos;ll be redirected to Zerodha to authorize the connection.
                           No need to enter access token manually.
                         </p>
                       </div>

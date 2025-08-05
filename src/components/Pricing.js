@@ -100,20 +100,19 @@ export default function Pricing() {
             Simple, Transparent Pricing
           </h2>
           <p className="text-gray-400 text-lg max-w-3xl mx-auto">
-            Start free and upgrade when you're ready. No hidden fees, no long-term contracts. 
+            Start free and upgrade when you&apos;re ready. No hidden fees, no long-term contracts.
             Cancel anytime.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {plans.map((plan, index) => (
-            <div 
+            <div
               key={index}
-              className={`relative bg-slate-800/50 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 transform hover:scale-105 ${
-                plan.popular 
-                  ? 'border-purple-500 shadow-lg shadow-purple-500/20' 
+              className={`relative bg-slate-800/50 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 transform hover:scale-105 ${plan.popular
+                  ? 'border-purple-500 shadow-lg shadow-purple-500/20'
                   : 'border-slate-700 hover:border-purple-500/50'
-              }`}
+                }`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -166,13 +165,13 @@ export default function Pricing() {
                 <h3 className="text-lg font-semibold text-white mb-2">Instant Activation</h3>
                 <p className="text-gray-400 text-sm">Start trading immediately after payment. No waiting period.</p>
               </div>
-              
+
               <div className="text-center">
                 <Check className="w-8 h-8 text-green-400 mx-auto mb-3" />
                 <h3 className="text-lg font-semibold text-white mb-2">Money Back Guarantee</h3>
                 <p className="text-gray-400 text-sm">Not satisfied? Get a full refund within 7 days.</p>
               </div>
-              
+
               <div className="text-center">
                 <Star className="w-8 h-8 text-purple-400 mx-auto mb-3" />
                 <h3 className="text-lg font-semibold text-white mb-2">24/7 Support</h3>

@@ -197,7 +197,7 @@ export default function Dashboard() {
                 <Clock className="w-6 h-6 text-blue-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-400">Today's P&L</p>
+                <p className="text-sm font-medium text-gray-400">Today&apos;s P&L</p>
                 <p className={`text-2xl font-bold ${stats.todayPnL >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
                   ₹{Math.abs(stats.todayPnL).toLocaleString()}
                 </p>

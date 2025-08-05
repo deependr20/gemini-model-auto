@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CheckCircle, XCircle, Loader } from 'lucide-react'
 
-export default function ZerodhaCallback() {
+function ZerodhaCallbackContent() {
   const [status, setStatus] = useState('processing') // processing, success, error
   const [message, setMessage] = useState('Processing Zerodha authentication...')
   const [error, setError] = useState('')
@@ -53,10 +53,10 @@ export default function ZerodhaCallback() {
           if (response.ok) {
             setStatus('success')
             setMessage('Zerodha account connected successfully!')
-            
+
             // Clean up stored data
             localStorage.removeItem('zerodha_auth_data')
-            
+
             // Redirect to dashboard after 2 seconds
             setTimeout(() => {
               router.push('/dashboard/brokers')
@@ -141,5 +141,23 @@ export default function ZerodhaCallback() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function ZerodhaCallback() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center px-4">
+        <div className="max-w-md w-full">
+          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-400 mx-auto mb-6"></div>
+            <h2 className="text-2xl font-bold text-white mb-4">Loading...</h2>
+            <p className="text-gray-400">Preparing authentication...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <ZerodhaCallbackContent />
+    </Suspense>
   )
 }
