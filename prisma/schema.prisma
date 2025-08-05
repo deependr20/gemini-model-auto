@@ -1,0 +1,236 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String
+  phone         String?
+  isVerified    Boolean   @default(false)
+  plan          Plan      @default(FREE)
+  planExpiresAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  brokerAccounts BrokerAccount[]
+  strategies     Strategy[]
+  orders         Order[]
+  webhooks       Webhook[]
+  notifications  Notification[]
+  sessions       Session[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model BrokerAccount {
+  id            String      @id @default(cuid())
+  userId        String
+  brokerName    BrokerType
+  apiKey        String
+  apiSecret     String
+  accessToken   String?
+  isActive      Boolean     @default(true)
+  isVirtual     Boolean     @default(false)
+  balance       Float       @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders        Order[]
+  positions     Position[]
+
+  @@unique([userId, brokerName])
+  @@map("broker_accounts")
+}
+
+model Strategy {
+  id            String       @id @default(cuid())
+  userId        String
+  name          String
+  description   String?
+  pineScript    String?
+  isActive      Boolean      @default(false)
+  isVirtual     Boolean      @default(true)
+  riskPerTrade  Float        @default(1.0)
+  maxPositions  Int          @default(1)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // Relations
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  webhooks      Webhook[]
+  orders        Order[]
+
+  @@map("strategies")
+}
+
+model Webhook {
+  id            String    @id @default(cuid())
+  userId        String
+  strategyId    String
+  url           String    @unique
+  isActive      Boolean   @default(true)
+  lastTriggered DateTime?
+  triggerCount  Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  strategy      Strategy  @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+  orders        Order[]
+
+  @@map("webhooks")
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  userId          String
+  strategyId      String?
+  webhookId       String?
+  brokerAccountId String
+  symbol          String
+  action          OrderAction
+  orderType       OrderType     @default(MARKET)
+  quantity        Int
+  price           Float?
+  stopLoss        Float?
+  takeProfit      Float?
+  status          OrderStatus   @default(PENDING)
+  brokerOrderId   String?
+  executedPrice   Float?
+  executedAt      DateTime?
+  isVirtual       Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  strategy        Strategy?     @relation(fields: [strategyId], references: [id], onDelete: SetNull)
+  webhook         Webhook?      @relation(fields: [webhookId], references: [id], onDelete: SetNull)
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id], onDelete: Cascade)
+
+  @@map("orders")
+}
+
+model Position {
+  id              String        @id @default(cuid())
+  brokerAccountId String
+  symbol          String
+  quantity        Int
+  averagePrice    Float
+  currentPrice    Float?
+  pnl             Float         @default(0)
+  isOpen          Boolean       @default(true)
+  openedAt        DateTime      @default(now())
+  closedAt        DateTime?
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([brokerAccountId, symbol])
+  @@map("positions")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+// Enums
+enum Plan {
+  FREE
+  TRIAL
+  BASIC
+  PREMIUM
+  ENTERPRISE
+}
+
+enum BrokerType {
+  ZERODHA
+  UPSTOX
+  FYERS
+  ALICEBLUE
+  BINANCE
+  SAMCO
+  FXCM
+  PAISA5
+  ALPACA
+  IIFL
+  BITBNS
+  BITMEX
+  METATRADER
+  WAZIRX
+  COINDCX
+  DELTA
+  TRADESMART
+  BYBIT
+  MASTERTRUST
+  FINVASIA
+  FTX
+  DHANHQ
+  PI42
+  VIRTUAL
+}
+
+enum OrderAction {
+  BUY
+  SELL
+}
+
+enum OrderType {
+  MARKET
+  LIMIT
+  STOP_LOSS
+  STOP_LOSS_MARKET
+}
+
+enum OrderStatus {
+  PENDING
+  PLACED
+  EXECUTED
+  CANCELLED
+  REJECTED
+  PARTIAL
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+  TRADE_ALERT
+}
