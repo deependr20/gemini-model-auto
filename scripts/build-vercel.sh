@@ -2,6 +2,10 @@
 
 echo "🚀 Starting Vercel build process..."
 
+# Install dependencies if not already installed
+echo "📦 Installing dependencies..."
+npm ci --only=production
+
 # Generate Prisma Client
 echo "📦 Generating Prisma Client..."
 npx prisma generate
@@ -16,7 +20,7 @@ fi
 
 # Build Next.js application
 echo "🏗️ Building Next.js application..."
-npm run build
+npx next build
 
 # Check if build was successful
 if [ $? -eq 0 ]; then
