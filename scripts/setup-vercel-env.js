@@ -1,0 +1,177 @@
+#!/usr/bin/env node
+
+/**
+ * Vercel Environment Variables Setup Helper
+ * This script helps you set up environment variables for Vercel deployment
+ */
+
+const readline = require('readline');
+const { execSync } = require('child_process');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+console.log('🚀 Vercel Environment Variables Setup Helper\n');
+
+// Required environment variables
+const requiredVars = [
+  {
+    name: 'DATABASE_URL',
+    description: 'Database connection string (PostgreSQL/MySQL)',
+    example: 'postgresql://user:pass@host:5432/db'
+  },
+  {
+    name: 'NEXTAUTH_SECRET',
+    description: 'NextAuth secret (32+ characters)',
+    example: 'your-super-secret-nextauth-key-min-32-chars'
+  },
+  {
+    name: 'JWT_SECRET',
+    description: 'JWT secret (32+ characters)',
+    example: 'your-super-secret-jwt-key-min-32-chars'
+  },
+  {
+    name: 'ENCRYPTION_KEY',
+    description: 'Encryption key (exactly 32 characters)',
+    example: 'YourSecretEncryptionKey1234567890AB'
+  },
+  {
+    name: 'NEXT_PUBLIC_APP_URL',
+    description: 'Your Vercel app URL',
+    example: 'https://your-app.vercel.app'
+  },
+  {
+    name: 'NEXTAUTH_URL',
+    description: 'NextAuth URL (same as app URL)',
+    example: 'https://your-app.vercel.app'
+  }
+];
+
+// Optional environment variables
+const optionalVars = [
+  {
+    name: 'ZERODHA_API_KEY',
+    description: 'Zerodha API Key (for live trading)',
+    example: 'your_zerodha_api_key'
+  },
+  {
+    name: 'ZERODHA_API_SECRET',
+    description: 'Zerodha API Secret',
+    example: 'your_zerodha_api_secret'
+  },
+  {
+    name: 'GEMINI_API_KEY',
+    description: 'Gemini AI API Key',
+    example: 'your_gemini_api_key'
+  }
+];
+
+function generateSecret(length = 32) {
+  const crypto = require('crypto');
+  return crypto.randomBytes(length).toString('base64').slice(0, length);
+}
+
+function generateEncryptionKey() {
+  const crypto = require('crypto');
+  return crypto.randomBytes(16).toString('hex').toUpperCase();
+}
+
+async function askQuestion(question) {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer.trim());
+    });
+  });
+}
+
+async function setupEnvironmentVariables() {
+  console.log('📋 Setting up required environment variables...\n');
+  
+  const envVars = {};
+  
+  // Setup required variables
+  for (const variable of requiredVars) {
+    console.log(`\n🔧 Setting up: ${variable.name}`);
+    console.log(`Description: ${variable.description}`);
+    console.log(`Example: ${variable.example}`);
+    
+    if (variable.name === 'NEXTAUTH_SECRET' || variable.name === 'JWT_SECRET') {
+      const useGenerated = await askQuestion('Generate a secure secret automatically? (y/n): ');
+      if (useGenerated.toLowerCase() === 'y') {
+        envVars[variable.name] = generateSecret();
+        console.log(`✅ Generated: ${envVars[variable.name]}`);
+        continue;
+      }
+    }
+    
+    if (variable.name === 'ENCRYPTION_KEY') {
+      const useGenerated = await askQuestion('Generate encryption key automatically? (y/n): ');
+      if (useGenerated.toLowerCase() === 'y') {
+        envVars[variable.name] = generateEncryptionKey();
+        console.log(`✅ Generated: ${envVars[variable.name]}`);
+        continue;
+      }
+    }
+    
+    const value = await askQuestion(`Enter value for ${variable.name}: `);
+    if (value) {
+      envVars[variable.name] = value;
+    } else {
+      console.log('⚠️  Skipped (you can add this later in Vercel dashboard)');
+    }
+  }
+  
+  // Setup optional variables
+  console.log('\n📋 Optional environment variables...\n');
+  const setupOptional = await askQuestion('Do you want to set up optional variables? (y/n): ');
+  
+  if (setupOptional.toLowerCase() === 'y') {
+    for (const variable of optionalVars) {
+      console.log(`\n🔧 Optional: ${variable.name}`);
+      console.log(`Description: ${variable.description}`);
+      
+      const value = await askQuestion(`Enter value for ${variable.name} (or press Enter to skip): `);
+      if (value) {
+        envVars[variable.name] = value;
+      }
+    }
+  }
+  
+  // Generate Vercel commands
+  console.log('\n🚀 Generated Vercel CLI commands:\n');
+  console.log('Copy and run these commands in your terminal:\n');
+  
+  for (const [key, value] of Object.entries(envVars)) {
+    console.log(`vercel env add ${key} production`);
+    console.log(`# When prompted, enter: ${value}\n`);
+  }
+  
+  console.log('\n📋 Alternative: Add via Vercel Dashboard');
+  console.log('1. Go to https://vercel.com/dashboard');
+  console.log('2. Select your project');
+  console.log('3. Go to Settings > Environment Variables');
+  console.log('4. Add each variable manually\n');
+  
+  // Save to file
+  const saveToFile = await askQuestion('Save environment variables to .env.production file? (y/n): ');
+  if (saveToFile.toLowerCase() === 'y') {
+    const fs = require('fs');
+    let envContent = '# Production Environment Variables\n# Generated by setup script\n\n';
+    
+    for (const [key, value] of Object.entries(envVars)) {
+      envContent += `${key}="${value}"\n`;
+    }
+    
+    fs.writeFileSync('.env.production', envContent);
+    console.log('✅ Saved to .env.production');
+    console.log('⚠️  Remember: Never commit this file to Git!');
+  }
+  
+  console.log('\n🎉 Setup complete! Your app is ready for Vercel deployment.');
+  rl.close();
+}
+
+// Run the setup
+setupEnvironmentVariables().catch(console.error);
